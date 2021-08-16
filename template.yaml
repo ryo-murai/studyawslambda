@@ -9,6 +9,9 @@ Description: >
 Globals:
   Function:
     Timeout: 20
+    Environment:
+      Variables:
+        MAIN_CLASS: org.example.studyawslambda.StudyawslambdaApplication
 
 Resources:
   EventManagementQueue:
