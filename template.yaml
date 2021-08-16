@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  studyawslambda
+
+  SAM Template for studyawslambda java
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  EventManagementQueue:
+    Type: AWS::SQS::Queue
+  EventManagementDLQ:
+    Type: AWS::SQS::Queue
+  StudyAwsLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: studyawslambda
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest
+      Runtime: java11
+      MemorySize: 512
+      Events:
+        LambdaInvokingEvent:
+          Type: SQS # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Queue: !GetAtt EventManagementQueue.Arn
+            BatchSize: 10
+      # DeadLetterQueue:
+      #   Type: SNS
+      #   TargetArn: !Ref EventManagementDLQ
